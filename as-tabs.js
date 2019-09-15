@@ -151,6 +151,8 @@
                  indicator.style.width = '100%';
                  panels[index].style.visibility = 'visible';
                  panels[index].style.width = '100%';
+                 panels[index].style.height = 'auto';
+                 panels[index].style.padding = '10px';
              }, 10);
          }
      }
