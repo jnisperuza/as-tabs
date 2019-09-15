@@ -31,11 +31,12 @@
  AsTabBar.prototype.connectedCallback = function () {
      this.setAttribute(
          `style`, `
-                    display: inline-block;
+                    display: inline-flex;
                     width: 100%;
                     position: relative;
                     overflow-x: auto;
-                    transition: visibility opacity 0.3s;
+                    white-space: nowrap;
+                    transition: visibility, opacity 0.3s;
                 `
      );
  }
@@ -75,13 +76,13 @@
          var panel = Array.from(panels)[index];
          var tab = event.target;
          var tabs = document.querySelectorAll('as-tab');
-         var tabChild = Array.prototype.slice.call(event.target.childNodes);
+         var tabChild = Array.from(event.target.childNodes);
 
          // hide other active elements
          for (var y in tabs) {
              if (tabs[y] !== tab) {
                  if (tabs[y].children) {
-                     var indicator = findElement('active', Array.prototype.slice.call(tabs[y].children));
+                     var indicator = findElement('active', Array.from(tabs[y].children));
                      indicator.style.width = '0';
                      tabs[y].removeAttribute('selected');
                  }
@@ -97,10 +98,14 @@
                  if (panels[x].style) {
                      panels[x].style.visibility = 'hidden';
                      panels[x].style.width = '0';
+                     panels[x].style.height = '0';
+                     panels[x].style.padding = '0';
                  }
              } else {
-                 panel.style.visibility = 'visible';
+                 panels[x].style.visibility = 'visible';
                  panels[x].style.width = '100%';
+                 panels[x].style.height = 'auto';
+                 panels[x].style.padding = '10px';
              }
          }
 
@@ -117,6 +122,7 @@
                     height: auto;
                     font-family: sans-serif;
                     color: #010b17;
+                    box-sizing: border-box;
                 `
      );
  }
@@ -140,7 +146,7 @@
              var that = this;
              setTimeout(function () {
                  var index = Array.from(document.querySelectorAll('as-tab')).indexOf(that);
-                 var indicator = findElement('active', Array.prototype.slice.call(that.children));
+                 var indicator = findElement('active', Array.from(that.children));
                  var panels = document.querySelectorAll('as-tab-panel');
                  indicator.style.width = '100%';
                  panels[index].style.visibility = 'visible';
