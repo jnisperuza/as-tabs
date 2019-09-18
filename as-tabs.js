@@ -1,170 +1,134 @@
- function AsTabs() {
-     return Reflect.construct(HTMLElement, [], AsTabs);
- }
+function AsTabs() {
+    return Reflect.construct(HTMLElement, [], AsTabs);
+}
 
- function AsTabBar() {
-     return Reflect.construct(HTMLElement, [], AsTabBar);
- }
+function AsTabBar() {
+    return Reflect.construct(HTMLElement, [], AsTabBar);
+}
 
- function AsTab() {
-     return Reflect.construct(HTMLElement, [], AsTab);
- }
+function AsTab() {
+    return Reflect.construct(HTMLElement, [], AsTab);
+}
 
- function AsTabPanel() {
-     return Reflect.construct(HTMLElement, [], AsTabPanel);
- }
+function AsTabPanel() {
+    return Reflect.construct(HTMLElement, [], AsTabPanel);
+}
 
- AsTabs.prototype = Object.create(HTMLElement.prototype);
- AsTabBar.prototype = Object.create(HTMLElement.prototype);
- AsTab.prototype = Object.create(HTMLElement.prototype);
- AsTabPanel.prototype = Object.create(HTMLElement.prototype);
+AsTabs.prototype = Object.create(HTMLElement.prototype);
+AsTabBar.prototype = Object.create(HTMLElement.prototype);
+AsTab.prototype = Object.create(HTMLElement.prototype);
+AsTabPanel.prototype = Object.create(HTMLElement.prototype);
 
- AsTabs.prototype.connectedCallback = function () {
-     this.setAttribute(
-         `style`, `
-                    position: relative;
-                    display: block;
-                    width: 100%;
-                `
-     );
- }
- AsTabBar.prototype.connectedCallback = function () {
-     this.setAttribute(
-         `style`, `
-                    display: inline-flex;
-                    width: 100%;
-                    position: relative;
-                    overflow-x: auto;
-                    white-space: nowrap;
-                    transition: visibility, opacity 0.3s;
-                `
-     );
- }
- AsTab.prototype.connectedCallback = function () {
-     var div = document.createElement('div');
-     div.className = 'active';
-     div.setAttribute(
-         `style`, `
-                    position: absolute;
-                    width: 0;
-                    height: 2px;
-                    bottom: 0;
-                    left: 0;
-                    right: 0;
-                    margin: auto;
-                    background-color: #00b0ff;
-                    transition: width 0.1s;
-                `
-     );
-     this.setAttribute(
-         `style`, `
-                    position: relative;
-                    float: left;
-                    display: block;
-                    padding: 10px 20px;
-                    background-color: #3f51b5;
-                    cursor: pointer;
-                    text-transform: uppercase;
-                    font-family: sans-serif;
-                    color: #FFFFFF;
-                `
-     );
-     this.appendChild(div);
-     this.addEventListener("click", function (event) {
-         var index = Array.from(document.querySelectorAll('as-tab')).indexOf(event.target);
-         var panels = document.querySelectorAll('as-tab-panel');
-         var panel = Array.from(panels)[index];
-         var tab = event.target;
-         var tabs = document.querySelectorAll('as-tab');
-         var tabChild = Array.from(event.target.childNodes);
 
-         // hide other active elements
-         for (var y in tabs) {
-             if (tabs[y] !== tab) {
-                 if (tabs[y].children) {
-                     var indicator = findElement('active', Array.from(tabs[y].children));
-                     indicator.style.width = '0';
-                     tabs[y].removeAttribute('selected');
-                 }
-             } else {
-                 var indicator = findElement('active', tabChild);
-                 indicator.style.width = '100%';
-                 tab.setAttribute('selected', true);
-             }
-         }
+if ('registerElement' in document && 'import' in document.createElement('link') && 'content' in document.createElement('template')) {
+    AsTab.prototype.connectedCallback = function () {
+        callbackTab(this);
+    }
+    // disconnectedCallback
+    // adoptedCallback
+    Object.defineProperty(AsTab, 'observedAttributes', {
+        get: function () {
+            return ['selected'];
+        }
+    });
+    AsTab.prototype.attributeChangedCallback = function (attr, oldValue, newValue) {
+        if (attr == 'selected') {
+            if (newValue === 'true') {
+                onLoadTab(this);
+            }
+        }
+    }
+} else {
+    var tabList = Array.from(document.querySelectorAll('as-tab'));
+    for (var z in tabList) {
+        var selected = tabList[z].getAttribute("selected");
+        if (selected == 'true') {
+            tabList[z].onload = onLoadTab(tabList[z]);
+        }
+        tabList[z].onclick = callbackTab(tabList[z]);
+    }
+}
 
-         for (var x in panels) {
-             if (panels[x] !== panel) {
-                 if (panels[x].style) {
-                     panels[x].style.visibility = 'hidden';
-                     panels[x].style.width = '0';
-                     panels[x].style.height = '0';
-                     panels[x].style.padding = '0';
-                 }
-             } else {
-                 panels[x].style.visibility = 'visible';
-                 panels[x].style.width = '100%';
-                 panels[x].style.height = 'auto';
-                 panels[x].style.padding = '10px';
-             }
-         }
+if (window.customElements) {
+    window.customElements.define('as-tabs', AsTabs);
+    window.customElements.define('as-tab-bar', AsTabBar);
+    window.customElements.define('as-tab', AsTab);
+    window.customElements.define('as-tab-panel', AsTabPanel);
+}
 
-     }, false);
- }
- AsTabPanel.prototype.connectedCallback = function () {
-     this.setAttribute(
-         `style`, `
-                    display: block;
-                    float: left;
-                    position: relative;
-                    visibility: hidden;
-                    width: 100%;
-                    height: auto;
-                    font-family: sans-serif;
-                    color: #010b17;
-                    box-sizing: border-box;
-                `
-     );
- }
+function onLoadTab(event) {
+    setTimeout(function () {
+        var index = Array.from(document.querySelectorAll('as-tab')).indexOf(event);
+        var div = document.createElement('div');
+        var indicator = findElement('active', Array.from(event.children));
+        var panels = document.querySelectorAll('as-tab-panel');
 
- // disconnectedCallback
- // adoptedCallback
+        div.className = 'active';
+        event.appendChild(div);
+        indicator.style.width = '100%';
+        panels[index].style.visibility = 'visible';
+        panels[index].style.width = '100%';
+        panels[index].style.height = 'auto';
+        panels[index].style.padding = '10px';
+    }, 10);
+}
 
- // Monitor the 'name' attribute for changes.
- Object.defineProperty(AsTab, 'observedAttributes', {
-     get: function () {
-         return ['selected'];
-     }
- });
+function callbackTab(currentTab) {
+    var div = document.createElement('div');
+    div.className = 'active';
+    currentTab.appendChild(div);
+    currentTab.addEventListener("click", function (event) {
+        var index = Array.from(document.querySelectorAll('as-tab')).indexOf(event.target);
+        var panels = document.querySelectorAll('as-tab-panel');
+        var panel = Array.from(panels)[index];
+        var tab = event.target;
+        var tabs = document.querySelectorAll('as-tab');
+        var tabChild = Array.from(event.target.childNodes);
 
- // or just use HelloElement.observedAttributes = ['name']
- // if it doesn't need to be dynamic
- // Respond to attribute changes.
- AsTab.prototype.attributeChangedCallback = function (attr, oldValue, newValue) {
-     if (attr == 'selected') {
-         if (newValue === 'true') {
-             var that = this;
-             setTimeout(function () {
-                 var index = Array.from(document.querySelectorAll('as-tab')).indexOf(that);
-                 var indicator = findElement('active', Array.from(that.children));
-                 var panels = document.querySelectorAll('as-tab-panel');
-                 indicator.style.width = '100%';
-                 panels[index].style.visibility = 'visible';
-                 panels[index].style.width = '100%';
-                 panels[index].style.height = 'auto';
-                 panels[index].style.padding = '10px';
-             }, 10);
-         }
-     }
- }
+        // hide other active elements
+        for (var y in tabs) {
+            if (tabs[y] !== tab) {
+                if (tabs[y].children) {
+                    var indicator = findElement('active', Array.from(tabs[y].children));
+                    indicator.style.width = '0';
+                    tabs[y].removeAttribute('selected');
+                }
+            } else {
+                var indicator = findElement('active', tabChild);
+                indicator.style.width = '100%';
+                tab.setAttribute('selected', true);
+            }
+        }
 
- customElements.define('as-tabs', AsTabs);
- customElements.define('as-tab-bar', AsTabBar);
- customElements.define('as-tab', AsTab);
- customElements.define('as-tab-panel', AsTabPanel);
+        for (var x in panels) {
+            if (panels[x] !== panel) {
+                hidden(panels[x]);
+            } else {
+                visible(panels[x]);
+            }
+        }
 
- function findElement(className, data) {
-     return data.find(function (element) {
-         return element.className === className;
-     });
- }
+    }, false);
+}
+
+function visible(panel) {
+    panel.style.visibility = 'visible';
+    panel.style.width = '100%';
+    panel.style.height = 'auto';
+    panel.style.padding = '10px';
+}
+
+function hidden(panel) {
+    if (panel.style) {
+        panel.style.visibility = 'hidden';
+        panel.style.width = '0';
+        panel.style.height = '0';
+        panel.style.padding = '0';
+    }
+}
+
+function findElement(className, data) {
+    return data.find(function (element) {
+        return element.className === className;
+    });
+}

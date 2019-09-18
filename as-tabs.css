@@ -1,0 +1,50 @@
+as-tabs {
+    position: relative;
+    display: block;
+    width: 100%;
+}
+
+as-tabs as-tab-bar {
+    display: inline-flex;
+    width: 100%;
+    position: relative;
+    overflow-x: auto;
+    white-space: nowrap;
+    transition: visibility, opacity 0.3s;
+}
+
+as-tabs as-tab-bar as-tab {
+    position: relative;
+    float: left;
+    display: block;
+    padding: 10px 20px;
+    background-color: #3f51b5;
+    cursor: pointer;
+    text-transform: uppercase;
+    font-family: sans-serif;
+    color: #FFFFFF;
+}
+
+as-tabs as-tab-bar as-tab div.active {
+    position: absolute;
+    width: 0;
+    height: 2px;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    margin: auto;
+    background-color: #00b0ff;
+    transition: width 0.1s;
+}
+
+as-tabs as-tab-panel {
+    display: block;
+    float: left;
+    position: relative;
+    visibility: hidden;
+    width: 100%;
+    height: auto;
+    font-family: sans-serif;
+    color: #010b17;
+    box-sizing: border-box;
+}
