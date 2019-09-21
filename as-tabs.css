@@ -4,13 +4,28 @@ as-tabs {
     width: 100%;
 }
 
-as-tabs as-tab-bar {
+as-tabs as-tab-bar,
+as-tabs as-tab-bar .as-tab-scroll {
     display: inline-flex;
     width: 100%;
     position: relative;
-    overflow-x: auto;
+    overflow-x: hidden;
     white-space: nowrap;
     transition: visibility, opacity 0.3s;
+}
+
+as-tabs as-tab-bar .as-tab-scroll ~ button {
+    background-color: #f5f5f5;
+    font-size: 18px;
+    color: #999999;
+    cursor: pointer;
+    outline: none;
+}
+
+as-tabs as-tab-bar .as-tab-scroll ~ button:active,
+as-tabs as-tab-bar .as-tab-scroll ~ button:hover {
+    background-color: #E7E7E7;
+    color: #666666;
 }
 
 as-tabs as-tab-bar as-tab {
@@ -18,11 +33,15 @@ as-tabs as-tab-bar as-tab {
     float: left;
     display: block;
     padding: 10px 20px;
-    background-color: #3f51b5;
+    background: #f5f5f5;
+    background: linear-gradient(#ffffff, #f5f5f5);
     cursor: pointer;
-    text-transform: uppercase;
     font-family: sans-serif;
-    color: #FFFFFF;
+    color: #999999;
+}
+
+as-tabs as-tab-bar as-tab[selected=true] {
+    color: #00b0ff;
 }
 
 as-tabs as-tab-bar as-tab div.active {
